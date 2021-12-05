@@ -3,6 +3,8 @@
 Estrella is a lightweight and versatile build tool based on the fantastic
 [esbuild](https://github.com/evanw/esbuild) TypeScript and JavaScript compiler.
 
+## Note: This is a fork of the [Original estrella](https://github.com/rsms/estrella) to bump esbuild and typescript versions
+
 - Rebuild automatically when source files change
 - Build multiple projects at once, in parallel
 - TypeScript diagnostics run in parallel
@@ -30,7 +32,6 @@ or lolcat.js—name it whatever you want—script in which you invoke estrella. 
 into a fully-featured CLI program with access to a
 [rich API exposed by the estrella module](estrella.d.ts).
 
-
 ## Example use
 
 1. Add Estrella to your project: `npm install -D estrella`
@@ -38,13 +39,13 @@ into a fully-featured CLI program with access to a
 
 ```js
 #!/usr/bin/env node
-const { build } = require("estrella")
+const { build } = require("estrella");
 build({
   entry: "src/main.ts",
   outfile: "out/foo.js",
   bundle: true,
   // pass any options to esbuild here...
-})
+});
 ```
 
 Invoke your build script: (assumes `chmod +x build.js` has been set)
@@ -62,7 +63,6 @@ which you can use as templates for new projects.
 
 See [evanw/esbuild/lib/shared/types.ts](https://github.com/evanw/esbuild/blob/master/lib/shared/types.ts)
 for documentation of esbuild options.
-
 
 ## TypeScript diagnostics
 
@@ -109,15 +109,15 @@ To make this a warning, add a rule to `build()` in your build script:
 
 ```js
 #!/usr/bin/env node
-const { build } = require("estrella")
+const { build } = require("estrella");
 build({
   entry: "src/main.ts",
   outfile: "out/foo.js",
   bundle: true,
   tsrules: {
     7006: "WARNING",
-  }
-})
+  },
+});
 ```
 
 Now if we try to build again:
@@ -156,12 +156,10 @@ file, you can set `tslint:false` in your build config:
 build({
   // your regular options ...
   tslint: false,
-})
+});
 ```
 
-
 ## Examples and feature documentation
-
 
 ### Your build script becomes a CLI program
 
@@ -219,8 +217,6 @@ options:
 
 For a full example, see [examples/custom-cli-options](examples/custom-cli-options)
 
-
-
 ### Watching source files for changes
 
 One of the key features of Estrella is its ability to watch source files for changes and rebuild
@@ -239,7 +235,6 @@ Watching files for changes...
 Wrote out/main.js (341B, 10.18ms)
 ...
 ```
-
 
 ### Running your program
 
@@ -286,9 +281,9 @@ Examples: (effective process invocation in comment)
 
 ```js
 // build config               // effective program invocation
-run: true                     // [node, outfile] (same as `-run` on the command line)
-run: ["deno", "file name.js"] // ["deno", "file name.js"]
-run: "./prettier foo.js"      // runs script "./prettier foo.js" in a shell
+run: true; // [node, outfile] (same as `-run` on the command line)
+run: ["deno", "file name.js"]; // ["deno", "file name.js"]
+run: "./prettier foo.js"; // runs script "./prettier foo.js" in a shell
 ```
 
 When `run` is set in your config, the product will be run no matter how you invoke your build
@@ -298,18 +293,16 @@ build script like this:
 
 ```js
 #!/usr/bin/env node
-const { build, cliopts } = require("estrella")
+const { build, cliopts } = require("estrella");
 const p = build({
   entry: "main.ts",
   outfile: "out/main.js",
   run: cliopts.run && ["/bin/zsh", "-e", "-c", "echo **/*.ts"],
-})
+});
 ```
 
 `./build.js -run` will run your command as specified
 while simply `./build.js` won't cause the program to run.
-
-
 
 ### Building multiple products at once
 
@@ -318,21 +311,21 @@ Example `build.js` script:
 
 ```js
 #!/usr/bin/env node
-const { build } = require("estrella")
+const { build } = require("estrella");
 const common = {
   entry: "src/main.ts",
   bundle: true,
-}
+};
 build({
   ...common,
   outfile: "out/foo.min.js",
-})
+});
 build({
   ...common,
   outfile: "out/foo.debug.js",
   sourcemap: true,
   debug: true,
-})
+});
 ```
 
 Then run the script to build both an optimized product and a debug product:
@@ -351,8 +344,6 @@ one report, as is expected.
 In fact, since estrella is just a simple library, you can really do whatever you want
 in your build script.
 
-
-
 ### Pre-processing and post-processing
 
 Setting `onStart` and/or `onEnd` in a build config allows you to hook into the esbuild cycle.
@@ -369,23 +360,23 @@ Example build script using `onEnd` to show desktop notifications with
 
 ```js
 #!/usr/bin/env node
-const { build } = require("estrella")
-const notifier = require("node-notifier")
+const { build } = require("estrella");
+const notifier = require("node-notifier");
 build({
   entry: "src/main.ts",
   outfile: "out/foo.js",
   onEnd(config, result) {
-    config.watch && notifier.notify({
-      title: config.title,
-      message: result.errors.length > 0 ?
-        `Build failed with ${result.errors.length} errors` :
-        `Build succeeded`
-    })
+    config.watch &&
+      notifier.notify({
+        title: config.title,
+        message:
+          result.errors.length > 0
+            ? `Build failed with ${result.errors.length} errors`
+            : `Build succeeded`,
+      });
   },
-})
+});
 ```
-
-
 
 ### Watching arbitrary files for changes
 
@@ -397,29 +388,30 @@ Example build script:
 
 ```js
 #!/usr/bin/env node
-const { build, scandir, watch, cliopts } = require("estrella")
+const { build, scandir, watch, cliopts } = require("estrella");
 
 build({
   entry: "src/main.ts",
   outfile: "out/foo.js",
-})
+});
 
 function generateCode(file) {
-  console.log(`generate ${file} -> ${file}.js`)
+  console.log(`generate ${file} -> ${file}.js`);
   // replace with actual logic
 }
 
 // generate all files initially
-const dir = "src", filter = /\..*$/i
-scandir(dir, filter, {recursive:true}).then(files => {
-  files.map(generateCode)
+const dir = "src",
+  filter = /\..*$/i;
+scandir(dir, filter, { recursive: true }).then((files) => {
+  files.map(generateCode);
   // in watch mode, generate files as they change
-  cliopts.watch && watch(dir, {filter, recursive:true}, changes => {
-    changes.map(c => generateCode(c.name))
-  })
-})
+  cliopts.watch &&
+    watch(dir, { filter, recursive: true }, (changes) => {
+      changes.map((c) => generateCode(c.name));
+    });
+});
 ```
-
 
 ### Running a livereload web server
 
@@ -430,16 +422,17 @@ in your build script:
 
 ```js
 #!/usr/bin/env node
-const { build, cliopts } = require("estrella")
+const { build, cliopts } = require("estrella");
 build({
   entry: "src/main.ts",
   outfile: "docs/app.js",
-})
+});
 // Run a local web server with livereload when -watch is set
-cliopts.watch && require("serve-http").createServer({
-  port: 8181,
-  pubdir: require("path").join(__dirname, "docs"),
-})
+cliopts.watch &&
+  require("serve-http").createServer({
+    port: 8181,
+    pubdir: require("path").join(__dirname, "docs"),
+  });
 ```
 
 Now when you run your build script in watch mode a web server is run as well:
@@ -450,7 +443,6 @@ serving ./ at http://localhost:8181/
 Wrote docs/app.js (914 bytes, 12.44ms)
 TS: OK
 ```
-
 
 ### estrella as a program
 
@@ -491,7 +483,6 @@ options:
 
 See `estrella -h` for more details.
 
-
 ### Developing for Estrella
 
 Like any respectable compiler, Estrella of course builds itself.
@@ -510,8 +501,6 @@ Build instructions:
 - Build release products: `./build.js` (add `-w` for incremental compilation)
 - Build release products and run all tests: `./test/test.sh` (or `npm test`)
 - Build debug products and run all tests: `./test/test.sh -debug`
-
-
 
 ### Contributing to Estrella
 

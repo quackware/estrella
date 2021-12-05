@@ -1,6 +1,6 @@
 {
-  "name": "estrella",
-  "version": "1.4.1",
+  "name": "@quackware/estrella",
+  "version": "1.4.2",
   "description": "Versatile build tool based on the esbuild compiler",
   "main": "dist/estrella.js",
   "bin": {
@@ -25,19 +25,20 @@
   "scripts": {
     "build": "node build.js",
     "build-rescue": "bash misc/rescue.sh",
-    "test": "bash test/test.sh"
+    "test": "bash test/test.sh",
+    "clean": "rimraf node_modules && rimraf \"dist/*\""
   },
   "author": "Rasmus Andersson <rsms.me>",
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rsms/estrella.git"
+    "url": "git+https://github.com/quackware/estrella.git"
   },
   "engines": {
     "node": ">=12.0.0"
   },
   "dependencies": {
-    "esbuild": "^0.11.0"
+    "esbuild": "0.14.2"
   },
   "optionalDependencies": {
     "fsevents": "~2.3.1"
@@ -48,6 +49,7 @@
     "chokidar": "^3.5.1",
     "miniglob": "^0.1.2",
     "source-map-support": "^0.5.19",
-    "typescript": "^4.2.3"
+    "typescript": "^4.5.2",
+    "rimraf": "^3.0.2"
   }
 }
